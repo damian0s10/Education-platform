@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if question_list %}
+    <form id='test' action='.' method='POST'>
+        {% for question in question_list %}
+        <div class='question'>
+            <div><b>{{ question.id }}. {{ question.question_text }}</b></div>
+            <div><input type="radio" value='a' name='{{ question.id }}' required>{{ question.choice_1 }}</div>
+            <div><input type="radio" value='b' name='{{ question.id }}'>{{ question.choice_2 }}</div>
+            <div><input type="radio" value='c' name='{{ question.id }}'>{{ question.choice_3 }}</div>
+            <div><input type="radio" value='d' name='{{ question.id }}'>{{ question.choice_4 }}</div>
+        </div>
+        {% endfor %}
+        {% csrf_token %}
+        <div id='submit_test'><input id='input_test' type='submit' value='Zapisz'></div>
+    </form>
+{% endif %}
+{% if a %}
+    <div id='your_personality'>
+        <p><b>Wyniki ankiety stylu uczenia się:</b></p>
+        <p>Jesteś wzrokowcem w {{ a }}%,</p>
+        <p>słuchowcem w {{ b }}%,</p>
+        <p>dotykowcem w {{ c }}%,</p>
+        <p>kinestetykiem w {{ d }}%.</p>
+    </div>
+{% endif %}
+
+
+{% endblock %}
