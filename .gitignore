@@ -1,3 +1,11 @@
 env
 .vscode
 elearning/media
+elearning/students/migrations
+elearning/studenst/__pycache__
+elearning/polls/migrations
+elearning/polls/__pycache__
+elearning/images
+elearning/elearning/__pycache__
+elearning/courses/migrations
+elearning/courses/__pycache__
