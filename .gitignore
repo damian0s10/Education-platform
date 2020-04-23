@@ -2,7 +2,7 @@ env
 .vscode
 elearning/media
 elearning/students/migrations
-elearning/studenst/__pycache__
+elearning/students/__pycache__
 elearning/polls/migrations
 elearning/polls/__pycache__
 elearning/images
