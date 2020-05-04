@@ -12,6 +12,7 @@ from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.db.models import Count
 from django.views.generic.detail import DetailView
 from students.forms import CourseEnrollForm
+from django.contrib import messages
 
 class OwnerMixin(object):
     def get_queryset(self):
@@ -38,6 +39,14 @@ class ManageCourseListView(OwnerCourseMixin, ListView):
 
 class CourseCreateView(PermissionRequiredMixin, OwnerCourseEditMixin, CreateView):
     permission_required = 'courses.add_course'
+
+    def post(self, request, *args, **kwargs):
+        try:
+            response = super().post(request, *args, **kwargs)
+            return response
+        except:
+            return render(request, template_name=self.template_name, context=self.get_context_data())
+        
 
 class CourseUpdateView(PermissionRequiredMixin, OwnerCourseEditMixin, UpdateView):
     permission_required = 'courses.change_course'
@@ -144,7 +153,7 @@ class ContentOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
 class CourseListView(TemplateResponseMixin, View):
     model = Course
     template_name = 'courses/course/list.html'
-    print('sdadas')
+    
     def get(self, request, subject=None):
         subjects = Subject.objects.annotate(total_courses=Count('courses'))
         courses = Course.objects.annotate(total_modules=Count('modules'))

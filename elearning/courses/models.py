@@ -7,6 +7,16 @@ from django.utils.text import slugify
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
+class UserProfile(models.Model):
+    LEARNING_STYLES = (
+        ('wzrokowiec', 'wzrokowiec'),
+        ('słuchowiec', 'słuchowiec'),
+        ('dotykowiec', 'dotykowiec'),
+        ('kinestetyk', 'kinestetyk'),
+    )
+    user = models.OneToOneField(User, related_name='profile',  on_delete = models.CASCADE)
+    learning_style = models.CharField(max_length=10, choices=LEARNING_STYLES, null=True, blank=True)
+
 class Subject(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)

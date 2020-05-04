@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load course %}
 {% block title %}
     {{ object.title }}
 {% endblock %}
@@ -8,6 +8,7 @@
     {% with subject=course.subject %}
         <h1>
             {{ object.title }}
+            
         </h1>
         <div class="module">
             <h2>Opis kursu</h2>
@@ -17,17 +18,20 @@
                 Prowadzący: {{ course.owner.get_full_name }}
             </p>
             {{ object.overview|linebreaks }}
-            {% if request.user.is_authenticated %}
-                <form action="{% url "student_enroll_course" %}" method="post">
-                    {{ enroll_form }}
-                    {% csrf_token %}
-                    <input type="submit" class="button" value="Zapisz się">
-                </form>
-            {% else %}
-                <a href="{% url "student_registration" %}" class="button">
-                    zarejestruj się, aby zapisać się na kurs
-                </a>
-            {% endif %} 
+            {% if not request.user|has_group:"Instructors" and not request.user|in_course:object.slug %}
+                {% if request.user.is_authenticated %}
+                    <form action="{% url "student_enroll_course" %}" method="post">
+                        {{ enroll_form }}
+                        {% csrf_token %}
+                        <input type="submit" class="button" value="Zapisz się">
+                    </form>
+                {% else %}
+                    <a href="{% url "student_registration" %}" class="button">
+                        zarejestruj się, aby zapisać się na kurs
+                    </a>
+                {% endif %} 
+            {% endif %}
+            
         </div>
     {% endwith %}
 {% endblock %}

@@ -3,22 +3,24 @@ from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from braces.views import LoginRequiredMixin
-from .forms import CourseEnrollForm
+from .forms import CourseEnrollForm, UserCreateForm
 from django.views.generic.list import ListView
-from courses.models import Course
+from courses.models import Course, UserProfile
 from django.views.generic.detail import DetailView
+from django.contrib.auth import get_user_model
 
 class StudentRegistrationView(CreateView):
     template_name='students/student/registration.html'
-    form_class = UserCreationForm
+    form_class = UserCreateForm
     success_url = reverse_lazy('student_course_list')
-
+   
     def form_valid(self, form):
         result = super().form_valid(form)
         cd = form.cleaned_data
-        print(cd)
         user = authenticate(username=cd['username'], password=cd['password1'])
         login(self.request, user)
+        profile = UserProfile(user=user)
+        profile.save()
         return result
 
 
@@ -56,8 +58,19 @@ class StudentCourseDetailView(DetailView):
         if 'module_id' in self.kwargs:
             context['module'] = course.modules.get(id=self.kwargs['module_id'])
         else:
-            context['module'] = course.modules.all()[0  ] 
+            context['module'] = course.modules.all()[0] 
         return context
     
 
-    
+# class ProfileUpdateView(UpdateView):
+#     model = UserProfile
+#     form_class = ProfileForm
+#     template_name = 'profiles/profile-detail-update.html'
+#     success_url = '/'
+
+#     def get_object(self, **kwargs):
+#         username = self.kwargs.get("username")
+#         if username is None:
+#             raise Http404
+#         return get_object_or_404(UserProfile, user__username__iexact=username)
+

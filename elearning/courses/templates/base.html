@@ -1,4 +1,5 @@
 {% load static %}
+{% load course %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,13 +10,22 @@
 <body>
   <div id="header">
     <a href="/" class="logo">Platforma edukacyjna</a>
-    <ul class="menu">
+    <div class="menu">
+      <div><a href="/">Wszystkie kursy</a></div>
       {% if request.user.is_authenticated %}
-        <li><a href="{% url "logout" %}">Wyloguj</a></li>
+        {% if request.user|has_group:"Instructors" %}
+        <div><a href="{% url "manage_course_list" %}">Moje kursy</a></div>
+        {% else %}
+        <div><a href="{% url "student_course_list" %}">Moje kursy</a></div>
+        {% endif %}
+       
+        <div><a href="{% url "logout" %}">Wyloguj</a></div>
       {% else %}
-        <li><a href="{% url "login" %}">Zaloguj</a></li>
+        <div><a href="{% url "login" %}">Zaloguj</a></div>
       {% endif %}
-    </ul>
+
+      
+    </div>
   </div>
   <div id="content">
     {% block content %}

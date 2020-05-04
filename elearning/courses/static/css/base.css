@@ -69,10 +69,13 @@ h1 {
 }
 
 #header .menu {
-    list-style:none;
-    float:right;
-    margin:0;
-    padding:0;
+    float:right; 
+    display: flex; 
+    flex-direction: row;
+}
+
+#header .menu div {
+    padding: 0 10px;
 }
 
 .contents {
