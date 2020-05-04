@@ -9,7 +9,7 @@
     <h1>
         {{ module.title }}
     </h1>
-    <div class="contents">
+    <aside>
         <h3>Moduły</h3>
         <ul id="modules">
         {% for m in object.modules.all|check_style:request.user %}
@@ -27,7 +27,7 @@
         {% endfor %}
         </ul>
     </div>
-    <div class="module">
+    <div class="student_course">
         {% cache 600 module_contents module %}
             {% for content in module.contents.all %}
                 {% with item=content.item %}
@@ -36,5 +36,5 @@
                 {% endwith %}
             {% endfor %}
         {% endcache %}
-    </div>
+    </aside>
 {% endblock %}

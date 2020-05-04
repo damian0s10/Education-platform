@@ -8,6 +8,7 @@
     <h1>
         Twój profil
     </h1>
+    <div class='profile'>
     <div> <p>Imię: {{ user.first_name }}</p></div>
     <div> <p>Nazwisko: {{ user.last_name }}</p></div>
     <div> <p>Email: {{ user.email }}</p></div>
@@ -17,8 +18,9 @@
             {{ formset }}
             {{ formset.management_form }}
             {% csrf_token %}
-            <p><input type="submit" value="Zmień"></p>
+            <p><input type="submit" value="Zmień styl uczenia"></p>
         </form>
   
-    <div><a href="{% url "profile_update" %}">Jeśli nie jesteś pewien swojego stylu nauki, wypełnij ponownie test. </a></div>
+    <div><a href="{% url "personality_test" %}">Jeśli nie jesteś pewien swojego stylu nauki, wypełnij ponownie test. </a></div>
+    </div>
 {% endblock %}

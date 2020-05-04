@@ -8,7 +8,7 @@
 {% block content %}
   {% with course=module.course %}
     <h1>kurs "{{ course.title }}"</h1>
-    <div class="contents">
+    <aside>
       <h3>Moduły</h3>
       <ul id="modules">
         {% for m in course.modules.all %}
@@ -16,6 +16,7 @@
             <a href="{% url "module_content_list" m.id %}">
               <span>
                 Moduł <span class="order">{{ m.order|add:1 }}</span>
+                {{ m.learning_style }}
               </span>
               <br>
               {{ m.title }}
@@ -26,7 +27,7 @@
         {% endfor %}
       </ul>
       <p><a href="{% url "course_module_update" course.id %}">Edytuj moduły</a></p>
-    </div>
+    </aside>
     <div class="module">
       <h2>Moduł {{ module.order|add:1 }}: {{ module.title }}</h2>
       <h3>Treść modułu:</h3>

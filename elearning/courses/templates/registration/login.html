@@ -4,7 +4,7 @@
 
 {% block content %}
   <h1>Logowanie</h1>
-  <div class="module">
+  <section>
     {% if form.errors %}
       <p>Nazwa użytkownika lub hasło jest nieprawidłowe. Spróbuj ponownie.</p>
     {% endif %}
@@ -13,12 +13,11 @@
         {{ form.as_p }}
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next }}" />
-        <p><input type="submit" value="Log-in"></p>
+        <p><input type="submit" value="Zaloguj się"></p>
       </form>
     </div>
-  </div>
-  <a href="{% url "student_registration" %}" class="button">
-                        Zarejestruj się
-  </a>
+    <div><a href="{% url "student_registration" %}" class="button">Zarejestruj się</a></div>
+  </section>
+  
   
 {% endblock %}

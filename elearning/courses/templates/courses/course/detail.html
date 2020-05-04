@@ -10,11 +10,11 @@
             {{ object.title }}
             
         </h1>
-        <div class="module">
+        <div class="desc_course">
             <h2>Opis kursu</h2>
             <p>
                 <a href="{% url "course_list_subject" subject.slug %}">{{ subject.title }}</a>.
-                {{ course.modules.count }} moduł{{ course.modules|pluralize:"y" }}.
+                
                 Prowadzący: {{ course.owner.get_full_name }}
             </p>
             {{ object.overview|linebreaks }}

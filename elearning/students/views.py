@@ -1,16 +1,22 @@
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, FormView, UpdateView
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth import authenticate, login
 from braces.views import LoginRequiredMixin
-from .forms import CourseEnrollForm, UserCreateForm, UpdateProfileForm, UpdateLearningStyle
+from .forms import ( 
+    CourseEnrollForm, 
+    UserCreateForm, 
+    UpdateProfileForm, 
+    UpdateLearningStyle
+)
 from django.views.generic.list import ListView
 from courses.models import Course, UserProfile
 from django.views.generic.detail import DetailView
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.base import TemplateResponseMixin, View
 from django.shortcuts import redirect
+
 
 class StudentRegistrationView(CreateView):
     template_name='students/student/registration.html'
@@ -93,3 +99,18 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateResponseMixin,View):
             formset.save()
             return redirect('profile_update')
         return self.render_to_response({'formset': formset})
+
+class ChangePasswordView(LoginRequiredMixin, TemplateResponseMixin,View):
+    template_name = 'students/student/change_password.html'
+
+    def get(self, request, *args, **kwargs):
+        form = PasswordChangeForm(user=request.user)
+        return self.render_to_response({'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('profile')
+        return self.render_to_response({'form': form})
