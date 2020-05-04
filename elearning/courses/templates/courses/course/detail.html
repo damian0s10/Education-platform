@@ -20,11 +20,17 @@
             {{ object.overview|linebreaks }}
             {% if not request.user|has_group:"Instructors" and not request.user|in_course:object.slug %}
                 {% if request.user.is_authenticated %}
+                    {% if request.user|has_learning_style %}
                     <form action="{% url "student_enroll_course" %}" method="post">
                         {{ enroll_form }}
                         {% csrf_token %}
                         <input type="submit" class="button" value="Zapisz się">
                     </form>
+                    {% else %}
+                        <a href="{% url "personality_test" %}" class="button">
+                        wykonaj test styli uczenia się, aby zapisać się na kurs
+                    </a>
+                    {% endif %}
                 {% else %}
                     <a href="{% url "student_registration" %}" class="button">
                         zarejestruj się, aby zapisać się na kurs

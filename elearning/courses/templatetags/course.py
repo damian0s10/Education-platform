@@ -21,3 +21,7 @@ def has_group(user, group_name):
 def in_course(user, slug):
     course = get_object_or_404(Course, slug=slug)
     return True if user in course.students.all() else False
+
+@register.filter(name='has_learning_style')
+def has_learning_style(user):
+    return True if user.profile.learning_style else False

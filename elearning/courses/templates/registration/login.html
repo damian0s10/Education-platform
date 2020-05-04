@@ -3,7 +3,7 @@
 {% block title %}Logowanie{% endblock %}
 
 {% block content %}
-  <h1>Log-in</h1>
+  <h1>Logowanie</h1>
   <div class="module">
     {% if form.errors %}
       <p>Nazwa użytkownika lub hasło jest nieprawidłowe. Spróbuj ponownie.</p>
@@ -17,4 +17,8 @@
       </form>
     </div>
   </div>
+  <a href="{% url "student_registration" %}" class="button">
+                        Zarejestruj się
+  </a>
+  
 {% endblock %}

@@ -49,11 +49,29 @@ class Course(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
+# class LearningStyle(models.Model):
+#     LEARNING_STYLES = (
+#         ('wzrokowiec', 'wzrokowiec'),
+#         ('słuchowiec', 'słuchowiec'),
+#         ('dotykowiec', 'dotykowiec'),
+#         ('kinestetyk', 'kinestetyk'),
+#     )
+#     course = models.ForeignKey(Course, related_name='learning_styles', on_delete=models.CASCADE)
+#     learning_style = models.CharField(max_length=10, choices=LEARNING_STYLES)
+
+
 class Module(models.Model):
+    LEARNING_STYLES = (
+        ('wzrokowiec', 'wzrokowiec'),
+        ('słuchowiec', 'słuchowiec'),
+        ('dotykowiec', 'dotykowiec'),
+        ('kinestetyk', 'kinestetyk'),
+    )
     course = models.ForeignKey(Course, related_name='modules', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     order = OrderField(blank=True, for_fields=['course'])
+    learning_style = models.CharField(max_length=10, choices=LEARNING_STYLES)
 
     class Meta:
         ordering = ['order']

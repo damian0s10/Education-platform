@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Aktualizacja profilu
+{% endblock %}
+
+{% block content %}
+    <h1>
+        Aktualizacja profilu
+    </h1>
+    <div class="module">
+        <form action="" method="POST">
+            {{ formset }}
+            {{ formset.management_form }}
+            {% csrf_token %}
+            <p><input type="submit" value="Zmień"></p>
+        </form>
+    </div>
+{% endblock %}

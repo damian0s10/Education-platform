@@ -38,7 +38,6 @@
             <h3><a href="{% url "course_detail" course.slug %}">{{ course.title }}</a></h3>
             <p>
                 <a href="{% url "course_list_subject" subject.slug %}">{{ subject }}</a>.
-                {{ course.total_modules }} moduł{{ course.total_modules|pluralize:"y" }}.
                 Prowadzący: {{ course.owner.get_full_name }}
             </p>
         {% endwith %}

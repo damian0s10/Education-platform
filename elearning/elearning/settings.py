@@ -114,7 +114,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-from django.urls import reverse_lazy
 LOGIN_REDIRECT_URL = '/'
 
 MEDIA_URL = '/media/'

@@ -13,6 +13,7 @@
     <div class="menu">
       <div><a href="/">Wszystkie kursy</a></div>
       {% if request.user.is_authenticated %}
+      <div><a href="{% url "profile" %}">Profil</a></div>
         {% if request.user|has_group:"Instructors" %}
         <div><a href="{% url "manage_course_list" %}">Moje kursy</a></div>
         {% else %}

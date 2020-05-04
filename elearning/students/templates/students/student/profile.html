@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Twój profil
+{% endblock %}
+
+{% block content %}
+    <h1>
+        Twój profil
+    </h1>
+    <div> <p>Imię: {{ user.first_name }}</p></div>
+    <div> <p>Nazwisko: {{ user.last_name }}</p></div>
+    <div> <p>Email: {{ user.email }}</p></div>
+    <div><a href="{% url "profile_update" %}" class="button">zaktualizuj profil</a></div>
+    <div> <p>Twój styl uczenia się: {{ user.profile.learning_style }}</p></div>
+    <form action="" method="POST">
+            {{ formset }}
+            {{ formset.management_form }}
+            {% csrf_token %}
+            <p><input type="submit" value="Zmień"></p>
+        </form>
+  
+    <div><a href="{% url "profile_update" %}">Jeśli nie jesteś pewien swojego stylu nauki, wypełnij ponownie test. </a></div>
+{% endblock %}

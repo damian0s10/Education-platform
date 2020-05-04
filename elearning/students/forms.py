@@ -1,7 +1,7 @@
 from django import forms
 from courses.models import Course, UserProfile
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
 class CourseEnrollForm(forms.Form):
@@ -24,8 +24,14 @@ class UserCreateForm(UserCreationForm):
             user.save()
         return user
 
-# class ProfileForm(forms.ModelForm):
+class UpdateProfileForm(UserChangeForm):
 
-#     class Meta:
-#         model = UserProfile
-#         fields = ('first_name', 'last_name', 'learning_style')
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'password')
+
+class UpdateLearningStyle(forms.ModelForm):
+    
+    class Meta:
+        model = UserProfile
+        fields = ('learning_style',)

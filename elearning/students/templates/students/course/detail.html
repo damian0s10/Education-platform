@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load cache %}
-
+{% load module %}
 {% block title %}
     {{ object.title }}
 {% endblock %}
@@ -12,11 +12,11 @@
     <div class="contents">
         <h3>Moduły</h3>
         <ul id="modules">
-        {% for m in object.modules.all %}
+        {% for m in object.modules.all|check_style:request.user %}
             <li data-id="{{ m.id }}" {% if m == module %}class="selected"{% endif %}>
                 <a href="{% url "student_course_detail_module" object.id m.id %}">
                     <span>
-                        Moduł <span class="order">{{ m.order|add:1 }}</span>
+                        Moduł <span class="order">{{ forloop.counter }}</span>
                     </span>
                     <br>
                     {{ m.title }}
