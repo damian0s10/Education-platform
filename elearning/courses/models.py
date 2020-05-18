@@ -6,6 +6,7 @@ from .fields import OrderField
 from django.utils.text import slugify
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class UserProfile(models.Model):
     LEARNING_STYLES = (
@@ -49,23 +50,13 @@ class Course(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
-# class LearningStyle(models.Model):
-#     LEARNING_STYLES = (
-#         ('wzrokowiec', 'wzrokowiec'),
-#         ('słuchowiec', 'słuchowiec'),
-#         ('dotykowiec', 'dotykowiec'),
-#         ('kinestetyk', 'kinestetyk'),
-#     )
-#     course = models.ForeignKey(Course, related_name='learning_styles', on_delete=models.CASCADE)
-#     learning_style = models.CharField(max_length=10, choices=LEARNING_STYLES)
-
-
 class Module(models.Model):
     LEARNING_STYLES = (
         ('wzrokowiec', 'wzrokowiec'),
         ('słuchowiec', 'słuchowiec'),
         ('dotykowiec', 'dotykowiec'),
         ('kinestetyk', 'kinestetyk'),
+        ('wszyscy', 'wszyscy'),
     )
     course = models.ForeignKey(Course, related_name='modules', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
@@ -78,7 +69,6 @@ class Module(models.Model):
 
     def __str__(self):
         return '{}. {}'.format(self.order, self.title)
-
     
 class Content(models.Model):
     module = models.ForeignKey(Module, related_name='contents', on_delete=models.CASCADE)
@@ -97,7 +87,7 @@ class Content(models.Model):
 
 class ItemBase(models.Model):
     owner = models.ForeignKey(User, related_name='%(class)s_related', on_delete=models.CASCADE)
-    title = models.CharField(max_length=250)
+    title = models.CharField(max_length=250,blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -122,4 +112,40 @@ class Image(ItemBase):
 class Video(ItemBase):
     url = models.URLField()
 
+class Test(models.Model):
+    course = models.ForeignKey(Course, related_name='tests', on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    # active_from = models.DateTimeField(blank=True)
+    # active_time = models.DateTimeField(blank=True)
+    rating_weight = models.IntegerField(default=1,
+                                        validators=[MaxValueValidator(100), MinValueValidator(1)])
+    
+                                                                
+class Question(models.Model):
+    title = models.CharField(max_length=250)
+    test = models.ForeignKey(Test, related_name='%(class)s_related', on_delete=models.CASCADE)
+    
+    class Meta:
+        abstract = True
 
+class QuestionClosed(Question):
+    CHOICES = (
+        ('a', 'a'),
+        ('b', 'b'),
+        ('c', 'c'),
+        ('d', 'd'),
+    )
+    answers_a = models.TextField()
+    answers_b = models.TextField()
+    answers_c = models.TextField(blank=True)
+    answers_d = models.TextField(blank=True)
+    correct_answer = models.CharField(max_length=1, choices=CHOICES)
+    points = models.IntegerField(default=1,
+                                validators=[MaxValueValidator(100), MinValueValidator(1)])
+
+class ShortAnswer(Question):
+    answer = models.CharField(max_length=20, blank=True)
+    correct_answer = models.CharField(max_length=20)
+    points = models.IntegerField(default=1,
+                                validators=[MaxValueValidator(100), MinValueValidator(1)])

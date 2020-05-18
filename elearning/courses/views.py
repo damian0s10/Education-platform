@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Course, Module, Content, Subject
+from .models import Course, Module, Content, Subject, Test, Question
 from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic.base import TemplateResponseMixin, View
-from .forms import ModuleFormSet
+from .forms import ModuleFormSet, TestFormSet
 from django.forms.models import modelform_factory
 from django.apps import apps
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
@@ -13,6 +13,7 @@ from django.db.models import Count
 from django.views.generic.detail import DetailView
 from students.forms import CourseEnrollForm
 from django.contrib import messages
+from django.contrib.auth.models import User
 
 class OwnerMixin(object):
     def get_queryset(self):
@@ -174,3 +175,81 @@ class CourseDetailView(DetailView):
         context['enroll_form'] = CourseEnrollForm(initial={'course':self.object}) 
         return context
     
+class CourseStudentsListView(PermissionRequiredMixin, ListView):
+    model = User
+    template_name = 'courses/course/students.html'
+    permission_required = 'courses.change_course'
+
+    def get_queryset(self):
+        course = get_object_or_404(Course, pk=self.kwargs['pk'])
+        if course.owner == self.request.user:
+            qs = super().get_queryset()
+            return qs.filter(course_joined__in=[self.kwargs['pk']])
+        
+class CourseTestUpdateView(TemplateResponseMixin, View):
+    template_name = 'courses/manage/test/formset.html'
+    course = None
+
+    def get_formset(self, data=None):
+        return TestFormSet(instance=self.course, data=data)
+
+    def dispatch(self, request, pk):
+        self.course = get_object_or_404(Course, id=pk, owner=request.user)
+        return super().dispatch(request,pk)
+
+    def get(self, request, *args, **kwargs):
+        formset = self.get_formset()
+        return self.render_to_response({'course': self.course,
+                                        'formset': formset})
+
+    def post(self, request, *args, **kwargs):
+        formset = self.get_formset(data=request.POST)
+        if formset.is_valid():
+            formset.save()
+            return redirect('manage_course_list')
+        return self.render_to_response({'course': self.course,
+                                        'formset': formset})
+
+
+class QuestionCreateUpdateView(TemplateResponseMixin, View):
+    test = None
+    model = None
+    obj = None
+    template_name = 'courses/manage/test/create.html'
+
+    def get_model(self, model_name):
+        if model_name in ['questionclosed', 'shortanswer']:
+            return apps.get_model(app_label='courses',
+                                model_name=model_name)
+        return None
+
+    def get_form(self, model, *args, **kwargs):
+        Form = modelform_factory(model, exclude=['test','question_type'])
+        return Form(*args, **kwargs)
+
+    def dispatch(self, request, test_id, model_name, id=None):
+        self.test = get_object_or_404(Test, id=test_id)
+        self.model = self.get_model(model_name)
+        if id:
+            self.obj = get_object_or_404(self.model, id=id)
+        return super().dispatch(request, test_id, model_name, id)
+
+    def get(self, request, module_id, model_name, id=None):
+        form = self.get_form(self.model, instance=self.obj)
+        return self.render_to_response({'form': form,
+                                        'object': self.obj})
+
+    def post(self, request, module_id, model_name, id=None):
+        form = self.get_form(self.model,
+                            instance=self.obj,
+                            data=request.POST,
+                            )
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.test = self.test
+            obj.save()
+            # if not id:
+            #     Question.objects.create(module=self.module, item=obj)
+            # return redirect('module_content_list', self.module.id)
+        return self.render_to_response({'form': form,
+                                        'object': self.obj})

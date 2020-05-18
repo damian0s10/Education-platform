@@ -39,7 +39,7 @@
               <p>{{ item }} ({{ item|model_name }})</p>
               <a href="{% url "module_content_update" module.id item|model_name item.id %}">Edytuj</a>
               <form action="{% url "module_content_delete" content.id %}" method="post">
-                <input type="submit" value="Delete">
+                <input type="submit" value="Usuń">
                 {% csrf_token %}
               </form>
             {% endwith %}

@@ -352,3 +352,13 @@ section .login-form p {
     margin: 20px 0;
     max-width: 500px;
 }
+.students-list {
+    max-width: 400px;
+    margin: 50px auto;
+}
+.students-list ul {
+    list-style: none;
+}
+.students-list li {
+    padding: 10px;
+}

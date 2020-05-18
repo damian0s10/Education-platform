@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load course %}
+{% block title %}
+    {{ object.title }}
+{% endblock %}
+
+{% block content %}
+    <div class='students-list'>
+        <p>Lista studentów uczestniczących w kursie:</p>
+        <ul>
+            {% for student in object_list %}
+                <li>{{ forloop.counter }}. {{ student.first_name }} {{ student.last_name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

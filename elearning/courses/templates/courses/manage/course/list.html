@@ -16,6 +16,7 @@
           {% if course.modules.count > 0 %}
             <a href="{% url "module_content_list" course.modules.first.id %}">Zarządzaj treścią</a>
           {% endif %}  
+          <a href="{% url "course_students" course.id %}">Uczestnicy</a>
         </p>
       </div>
     {% empty %}
