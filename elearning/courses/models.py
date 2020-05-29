@@ -154,5 +154,5 @@ class ShortAnswer(Question):
 class Grade(models.Model):
     test = models.ForeignKey(Test, related_name='grades', on_delete=models.CASCADE)
     student = models.ForeignKey(User, related_name='student_grades', on_delete=models.CASCADE)
-    grade = models.IntegerField(default=1,
+    grade = models.IntegerField(null=True,
                                 validators=[MaxValueValidator(100), MinValueValidator(1)])

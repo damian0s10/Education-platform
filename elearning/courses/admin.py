@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Subject, Course, Module, UserProfile, Test, Question, QuestionClosed, ShortAnswer
+from .models import Subject, Course, Module, UserProfile, Test, Question, QuestionClosed, ShortAnswer, Grade
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
@@ -42,6 +42,11 @@ class ShortAnswerInLine(admin.StackedInline):
 class TestAdmin(admin.ModelAdmin):
     list_display = ['id', 'title']
     inlines = [QuestionClosedInLine, ShortAnswerInLine]
+
+@admin.register(Grade)
+class GradeAdmin(admin.ModelAdmin):
+    list_display = ['test', 'student', 'grade']
+    
 
 # @admin.register(QuestionClosed)
 # class QuestionClosedAdmin(admin.ModelAdmin):

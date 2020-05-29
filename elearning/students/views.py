@@ -10,7 +10,7 @@ from .forms import (
     UpdateLearningStyle
 )
 from django.views.generic.list import ListView
-from courses.models import Course, UserProfile
+from courses.models import Course, UserProfile, Grade
 from django.views.generic.detail import DetailView
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -40,6 +40,9 @@ class StudentEnrollCourseView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         self.course = form.cleaned_data['course']
         self.course.students.add(self.request.user)
+        for test in self.course.tests.all():
+            g = Grade(test=test,student=self.request.user)
+            g.save()
         return super().form_valid(form)
     
     def get_success_url(self):

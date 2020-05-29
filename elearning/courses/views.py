@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Course, Module, Content, Subject, Test, Question
+from .models import Course, Module, Content, Subject, Test, Question, Grade
 from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -189,12 +189,14 @@ class CourseStudentsListView(PermissionRequiredMixin, ListView):
 class CourseTestUpdateView(TemplateResponseMixin, View):
     template_name = 'courses/manage/test/formset.html'
     course = None
+    students = None
 
     def get_formset(self, data=None):
         return TestFormSet(instance=self.course, data=data)
 
     def dispatch(self, request, pk):
         self.course = get_object_or_404(Course, id=pk, owner=request.user)
+        self.students = self.course.students.all()       
         return super().dispatch(request,pk)
 
     def get(self, request, *args, **kwargs):
@@ -205,7 +207,11 @@ class CourseTestUpdateView(TemplateResponseMixin, View):
     def post(self, request, *args, **kwargs):
         formset = self.get_formset(data=request.POST)
         if formset.is_valid():
-            formset.save()
+            obj = formset.save()
+            if obj:
+                for student in self.students:
+                    g = Grade(test=obj[-1],student=student)
+                    g.save()
             return redirect('manage_course_list')
         return self.render_to_response({'course': self.course,
                                         'formset': formset})

@@ -17,6 +17,7 @@
             <a href="{% url "module_content_list" course.modules.first.id %}">Zarządzaj treścią</a>
           {% endif %}  
           <a href="{% url "course_students" course.id %}">Uczestnicy</a>
+          <a href="{% url "course_test_update" course.id %}">Testy</a>
         </p>
       </div>
     {% empty %}
