@@ -246,7 +246,10 @@ class QuestionCreateUpdateView(TemplateResponseMixin, View):
         return None
 
     def get_form(self, model, *args, **kwargs):
-        Form = modelform_factory(model, exclude=['test','question_type','answer'])
+        labels = {'title': 'Tytuł','order': 'Kolejność:','answers_a':'Odp a',
+                  'answers_b':'Odp b', 'answers_c':'Odp c', 'answers_d':'Odp d',
+                  'correct_answer':'Poprawna odpowiedź','points': 'Punkty'}
+        Form = modelform_factory(model, labels=labels, exclude=['test','question_type','answer'])
         return Form(*args, **kwargs)
 
     def dispatch(self, request, test_id, question_type, id=None):

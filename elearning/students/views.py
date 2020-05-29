@@ -10,13 +10,15 @@ from .forms import (
     UpdateLearningStyle
 )
 from django.views.generic.list import ListView
-from courses.models import Course, UserProfile, Grade
+from courses.models import Course, UserProfile, Grade, Test
 from django.views.generic.detail import DetailView
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.base import TemplateResponseMixin, View
-from django.shortcuts import redirect
-
+from django.shortcuts import render, redirect, get_object_or_404
+from itertools import chain
+from operator import attrgetter
+from django.apps import apps
 
 class StudentRegistrationView(CreateView):
     template_name='students/student/registration.html'
@@ -117,3 +119,79 @@ class ChangePasswordView(LoginRequiredMixin, TemplateResponseMixin,View):
             update_session_auth_hash(request, form.user)
             return redirect('profile')
         return self.render_to_response({'form': form})
+
+class StudentCourseTestsView(LoginRequiredMixin, TemplateResponseMixin,View):
+    template_name = 'students/course/tests/list.html'
+    
+    def get(self,request, course_id):
+        course = get_object_or_404(Course,id=course_id)
+        tests = course.tests.all()
+        print(tests)
+        
+        return self.render_to_response({'tests': tests,
+                                        'course': course})
+
+class StudentTestView(LoginRequiredMixin, TemplateResponseMixin,View):
+    template_name = 'students/course/tests/solve.html'
+    test = None
+    questions = None
+    
+    def dispatch(self, request, test_id):
+        self.test = get_object_or_404(Test, id=test_id)
+        questions1 = self.test.questionclosed_set.all()
+        questions2 = self.test.shortanswer_set.all()
+        self.questions = sorted(
+            chain(questions1, questions2),
+            key=attrgetter('order'))
+        return super().dispatch(request, test_id)
+
+    def get_model(self, question_type):
+        if question_type in ['questionclosed', 'shortanswer']:
+            return apps.get_model(app_label='courses',
+                                model_name=question_type)
+        return None
+
+    def get(self, request, test_id):
+        print(self.questions)
+        return self.render_to_response({'questions': self.questions,
+                                        'test': self.test})
+   
+    def post(self, request, test_id):
+        points = 0
+        total = 0
+        for q in self.questions:
+            model = self.get_model(q.get_class_name())
+            question = get_object_or_404(model,id=q.id)
+            val = str(q.get_class_name())+"&"+str(q.id)
+            answer = request.POST.get(val)
+            if question.correct_answer.lower() == answer.lower():
+                points += question.points
+            total += question.points
+        g = get_object_or_404(Grade,test=self.test, student=request.user)
+        g.grade = points
+        # g.total = total
+        g.save()
+        
+        return self.render_to_response({'solved': True, 
+                                        'points': points,
+                                        'total': total})
+
+
+class StudentGradesView(LoginRequiredMixin, TemplateResponseMixin,View):
+    template_name = 'students/course/tests/grades.html'
+
+    def get(self, request, course_id):
+        grades = []
+        course = get_object_or_404(Course, id=course_id)
+        tests = course.tests.all()
+
+        for test in tests:
+            grade = []
+            grade.append(test.title)
+            grade.append(test.rating_weight) 
+            g = get_object_or_404(Grade,test=test,student=request.user)
+            grade.append(g.grade)
+            grades.append(grade)
+        
+
+        return self.render_to_response({'grades': grades})

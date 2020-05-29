@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Moje testy{% endblock %}
+
+{% block content %}
+    <h1>Testy kursu {{course.title}}</h1>
+
+     <div class="courses">
+        {% for test in tests %}
+            {{test.title}} <a href="{% url "student_test_view" test.id %}">Rozwiąż test</a>
+        {% empty %}
+            Nie ma stworzonych testów do tego kursu.      
+        {% endfor %}
+    </div> 
+{% endblock %}

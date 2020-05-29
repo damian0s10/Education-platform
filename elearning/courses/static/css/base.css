@@ -365,7 +365,32 @@ section .login-form p {
 .tests {
     width: 600px;
     margin: 20px auto;
+    border:1px solid #ccc
 }
 .tests ul {
     list-style: none;
+}
+.tests ul li{
+    padding: 10px;
+}
+.tests ul div{
+    padding: 10px;
+}
+.question_answers {
+    width: 500px;
+    padding: 20px;
+    margin: 20px auto;
+    border:1px solid #ccc;
+}
+.question_answers textarea {
+    width: 400px;
+    height: 30px;
+}
+.question_answers .submit {
+    text-align: center;
+}
+.edit_module a {
+    margin: 20px;
+    display: block;
+    font-size: 20px;
 }

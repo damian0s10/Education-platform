@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Oceny{% endblock %}
+
+{% block content %}
+    <h1>Moje kursy</h1>
+
+    <div class="courses">
+        {% for grade in grades %}
+            <div>
+            {{grade.0}}
+            waga: {{grade.1}}
+            ocena: {{grade.2}}
+            </div>
+        {% empty %}
+            <p>
+                Jeszcze nie masz ocen.
+            </p>
+        {% endfor %}
+    </div>
+{% endblock %}

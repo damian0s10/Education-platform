@@ -12,13 +12,13 @@
     <ul>
     Pytania:
     {% for q in questions %}
-        <li>{{q.title}}<a href="{% url "test_question_change" test.id q.get_class_name q.id %}"> Edytuj </a> <a href="{% url "test_question_delete" test.id q.get_class_name q.id %}">Usuń</a></li>
+        <li>{{ forloop.counter }}. {{q.title}}<a href="{% url "test_question_change" test.id q.get_class_name q.id %}"> Edytuj </a> <a href="{% url "test_question_delete" test.id q.get_class_name q.id %}">Usuń</a></li>
     {% empty %}
       <p>Nie utworzyłeś jeszcze żadnych pytań.</p>
     {% endfor %}
     
-    <a href="{% url "test_question_create" test.id "questionclosed" %}">Utwórz pytanie zamknięte </a></li>
-    <a href="{% url "test_question_create" test.id "shortanswer" %}">Utwórz pytanie z krótką odpowiedzią </a></li>
+    <div><a href="{% url "test_question_create" test.id "questionclosed" %}">Utwórz pytanie zamknięte </a></div>
+    <div><a href="{% url "test_question_create" test.id "shortanswer" %}">Utwórz pytanie z krótką odpowiedzią </a></div>
     </ul>
   </div>
 {% endblock %}

@@ -8,8 +8,11 @@ ModuleFormSet = inlineformset_factory(Course,
                                     extra=2,
                                     can_delete=True)
 
+labels = {'title': 'Tytuł testu', 'description': 'Opis', 'rating_weight': 'Waga oceny(0-100)'}
+
 TestFormSet = inlineformset_factory(Course,
                                     Test,
                                     fields=['title', 'description','rating_weight' ],
                                     extra=1,
+                                    labels=labels,
                                     can_delete=True)
