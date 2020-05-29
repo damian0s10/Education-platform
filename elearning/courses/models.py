@@ -149,3 +149,10 @@ class ShortAnswer(Question):
     correct_answer = models.CharField(max_length=20)
     points = models.IntegerField(default=1,
                                 validators=[MaxValueValidator(100), MinValueValidator(1)])
+
+
+class Grade(models.Model):
+    test = models.ForeignKey(Test, related_name='grades', on_delete=models.CASCADE)
+    student = models.ForeignKey(User, related_name='student_grades', on_delete=models.CASCADE)
+    grade = models.IntegerField(default=1,
+                                validators=[MaxValueValidator(100), MinValueValidator(1)])
