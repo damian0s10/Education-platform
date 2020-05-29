@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}
+  
+    Edycja testów kursu "{{ course.title }}"
+  
+{% endblock %}
+
+{% block content %}
+  <h1>Edycja testów kursu "{{ course.title }}</h1>
+  <div class='tests'>
+    <ul>
+    Testy:
+    {% for test in tests %}
+        <li><a href="{% url "test_question_update" test.id %}">{{ test.title }} </a></li>
+    {% empty %}
+      <p>Nie utworzyłeś jeszcze żadnych testów.</p>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

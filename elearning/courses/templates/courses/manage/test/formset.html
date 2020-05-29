@@ -9,6 +9,7 @@
   
   <div class="edit_module">
     <h2>Testy kursu</h2>
+    <a href="{% url "course_tests_manage" course.id %}">Zarządzaj pytaniami</a>
     <form action="" method="post">
       {{ formset }}
       {{ formset.management_form }}

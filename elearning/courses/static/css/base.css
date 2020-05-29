@@ -362,3 +362,10 @@ section .login-form p {
 .students-list li {
     padding: 10px;
 }
+.tests {
+    width: 600px;
+    margin: 20px auto;
+}
+.tests ul {
+    list-style: none;
+}

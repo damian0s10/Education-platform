@@ -124,11 +124,12 @@ class Test(models.Model):
                                                                 
 class Question(models.Model):
     title = models.CharField(max_length=250)
-    test = models.ForeignKey(Test, related_name='%(class)s_related', on_delete=models.CASCADE)
-    
+    order = models.PositiveIntegerField()
+
     class Meta:
         abstract = True
-
+    
+    
 class QuestionClosed(Question):
     CHOICES = (
         ('a', 'a'),
@@ -136,6 +137,9 @@ class QuestionClosed(Question):
         ('c', 'c'),
         ('d', 'd'),
     )
+    
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    answer = models.CharField(max_length=1, blank=True)
     answers_a = models.TextField()
     answers_b = models.TextField()
     answers_c = models.TextField(blank=True)
@@ -143,13 +147,18 @@ class QuestionClosed(Question):
     correct_answer = models.CharField(max_length=1, choices=CHOICES)
     points = models.IntegerField(default=1,
                                 validators=[MaxValueValidator(100), MinValueValidator(1)])
+    def get_class_name(self):
+        return 'questionclosed'
 
 class ShortAnswer(Question):
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
     answer = models.CharField(max_length=20, blank=True)
     correct_answer = models.CharField(max_length=20)
     points = models.IntegerField(default=1,
                                 validators=[MaxValueValidator(100), MinValueValidator(1)])
 
+    def get_class_name(self):
+        return 'shortanswer'
 
 class Grade(models.Model):
     test = models.ForeignKey(Test, related_name='grades', on_delete=models.CASCADE)

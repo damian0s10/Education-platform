@@ -14,6 +14,8 @@ from django.views.generic.detail import DetailView
 from students.forms import CourseEnrollForm
 from django.contrib import messages
 from django.contrib.auth.models import User
+from itertools import chain
+from operator import attrgetter
 
 class OwnerMixin(object):
     def get_queryset(self):
@@ -216,6 +218,20 @@ class CourseTestUpdateView(TemplateResponseMixin, View):
         return self.render_to_response({'course': self.course,
                                         'formset': formset})
 
+class TestManageView(TemplateResponseMixin, View):
+    template_name = 'courses/manage/test/manage.html'
+    course = None
+    tests = None
+
+    def dispatch(self, request, pk):
+        self.course = get_object_or_404(Course, id=pk, owner=request.user)
+        self.tests = self.course.tests.all()       
+        return super().dispatch(request,pk)
+    
+    def get(self,request, *args, **kwargs):
+        return self.render_to_response({'course': self.course,
+                                        'tests': self.tests})
+
 
 class QuestionCreateUpdateView(TemplateResponseMixin, View):
     test = None
@@ -223,29 +239,29 @@ class QuestionCreateUpdateView(TemplateResponseMixin, View):
     obj = None
     template_name = 'courses/manage/test/create.html'
 
-    def get_model(self, model_name):
-        if model_name in ['questionclosed', 'shortanswer']:
+    def get_model(self, question_type):
+        if question_type in ['questionclosed', 'shortanswer']:
             return apps.get_model(app_label='courses',
-                                model_name=model_name)
+                                model_name=question_type)
         return None
 
     def get_form(self, model, *args, **kwargs):
-        Form = modelform_factory(model, exclude=['test','question_type'])
+        Form = modelform_factory(model, exclude=['test','question_type','answer'])
         return Form(*args, **kwargs)
 
-    def dispatch(self, request, test_id, model_name, id=None):
+    def dispatch(self, request, test_id, question_type, id=None):
         self.test = get_object_or_404(Test, id=test_id)
-        self.model = self.get_model(model_name)
+        self.model = self.get_model(question_type)
         if id:
             self.obj = get_object_or_404(self.model, id=id)
-        return super().dispatch(request, test_id, model_name, id)
+        return super().dispatch(request, test_id, question_type)
 
-    def get(self, request, module_id, model_name, id=None):
+    def get(self, request, test_id, question_type):
         form = self.get_form(self.model, instance=self.obj)
         return self.render_to_response({'form': form,
                                         'object': self.obj})
 
-    def post(self, request, module_id, model_name, id=None):
+    def post(self, request, test_id, model_name, id=None):
         form = self.get_form(self.model,
                             instance=self.obj,
                             data=request.POST,
@@ -254,8 +270,40 @@ class QuestionCreateUpdateView(TemplateResponseMixin, View):
             obj = form.save(commit=False)
             obj.test = self.test
             obj.save()
-            # if not id:
-            #     Question.objects.create(module=self.module, item=obj)
-            # return redirect('module_content_list', self.module.id)
+            return redirect('test_question_update', self.test.id)
         return self.render_to_response({'form': form,
                                         'object': self.obj})
+
+
+
+class QuestionDeleteView(View):
+
+    def get_model(self, question_type):
+        if question_type in ['questionclosed', 'shortanswer']:
+            return apps.get_model(app_label='courses',
+                                model_name=question_type)
+        return None
+    def get(self, request, test_id, question_type,id):
+        model = self.get_model(question_type)
+        question = get_object_or_404(model, id = id)
+        question.delete()
+        return redirect('test_question_update', test_id)
+
+class QuestionManageView(TemplateResponseMixin, View):
+    test = None
+    template_name = 'courses/manage/test/questions/manage.html'
+
+    def dispatch(self, request, test_id):
+        self.test = get_object_or_404(Test, id=test_id)
+        return super().dispatch(request, test_id)
+
+    def get(self, request, test_id):
+        questions1 = self.test.questionclosed_set.all()
+        questions2 = self.test.shortanswer_set.all()
+        questions = sorted(
+            chain(questions1, questions2),
+            key=attrgetter('order'))
+        return self.render_to_response({'questions': questions,
+                                        'test': self.test})
+
+   
