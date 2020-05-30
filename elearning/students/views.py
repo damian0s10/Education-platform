@@ -19,6 +19,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from itertools import chain
 from operator import attrgetter
 from django.apps import apps
+from django.contrib.auth.models import User
 
 class StudentRegistrationView(CreateView):
     template_name='students/student/registration.html'
@@ -135,14 +136,18 @@ class StudentTestView(LoginRequiredMixin, TemplateResponseMixin,View):
     template_name = 'students/course/tests/solve.html'
     test = None
     questions = None
-    
+    grade = None
     def dispatch(self, request, test_id):
         self.test = get_object_or_404(Test, id=test_id)
-        questions1 = self.test.questionclosed_set.all()
-        questions2 = self.test.shortanswer_set.all()
-        self.questions = sorted(
-            chain(questions1, questions2),
-            key=attrgetter('order'))
+        g = get_object_or_404(Grade, student=request.user, test=self.test)
+        self.grade = g.grade
+        if self.grade == None:
+            questions1 = self.test.questionclosed_set.all()
+            questions2 = self.test.shortanswer_set.all()
+
+            self.questions = sorted(
+                chain(questions1, questions2),
+                key=attrgetter('order'))
         return super().dispatch(request, test_id)
 
     def get_model(self, question_type):
@@ -152,10 +157,13 @@ class StudentTestView(LoginRequiredMixin, TemplateResponseMixin,View):
         return None
 
     def get(self, request, test_id):
-        print(self.questions)
-        return self.render_to_response({'questions': self.questions,
+        if self.grade == None:
+            return self.render_to_response({'questions': self.questions,
                                         'test': self.test})
-   
+        return self.render_to_response({'cant_solve':True})
+        
+        
+
     def post(self, request, test_id):
         points = 0
         total = 0
@@ -169,7 +177,7 @@ class StudentTestView(LoginRequiredMixin, TemplateResponseMixin,View):
             total += question.points
         g = get_object_or_404(Grade,test=self.test, student=request.user)
         g.grade = points
-        # g.total = total
+        g.total = total
         g.save()
         
         return self.render_to_response({'solved': True, 
@@ -184,14 +192,28 @@ class StudentGradesView(LoginRequiredMixin, TemplateResponseMixin,View):
         grades = []
         course = get_object_or_404(Course, id=course_id)
         tests = course.tests.all()
-
+        overall_rating = 0
+        total_weight = 0
         for test in tests:
             grade = []
             grade.append(test.title)
-            grade.append(test.rating_weight) 
+            grade.append(test.rating_weight)
             g = get_object_or_404(Grade,test=test,student=request.user)
-            grade.append(g.grade)
-            grades.append(grade)
-        
-
-        return self.render_to_response({'grades': grades})
+            if g.grade != None:
+                grade.append(g.grade)
+                grade.append(g.total)
+                percent = round((g.grade/g.total)* 100,2) 
+                grade.append(percent)
+                grades.append(grade)
+                overall_rating += percent * test.rating_weight
+                total_weight += test.rating_weight
+            else:
+                grade.append(None)
+                grades.append(grade)
+                
+        if total_weight:
+            overall = round(overall_rating/total_weight,2)
+        else:
+            overall = 0
+        return self.render_to_response({'grades': grades,
+                                        'overall': overall})

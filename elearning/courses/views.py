@@ -157,6 +157,7 @@ class CourseListView(TemplateResponseMixin, View):
     model = Course
     template_name = 'courses/course/list.html'
     
+
     def get(self, request, subject=None):
         subjects = Subject.objects.annotate(total_courses=Count('courses'))
         courses = Course.objects.annotate(total_modules=Count('modules'))
@@ -181,15 +182,24 @@ class CourseStudentsListView(PermissionRequiredMixin, ListView):
     model = User
     template_name = 'courses/course/students.html'
     permission_required = 'courses.change_course'
+    course = None
 
     def get_queryset(self):
-        course = get_object_or_404(Course, pk=self.kwargs['pk'])
-        if course.owner == self.request.user:
+        self.course = get_object_or_404(Course, pk=self.kwargs['pk'])
+        if self.course.owner == self.request.user:
             qs = super().get_queryset()
             return qs.filter(course_joined__in=[self.kwargs['pk']])
+    
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['course'] = self.course
+        return data
+
+    
         
 class CourseTestUpdateView(TemplateResponseMixin, View):
     template_name = 'courses/manage/test/formset.html'
+    permission_required = 'courses.change_course'
     course = None
     students = None
 
@@ -220,6 +230,7 @@ class CourseTestUpdateView(TemplateResponseMixin, View):
 
 class TestManageView(TemplateResponseMixin, View):
     template_name = 'courses/manage/test/manage.html'
+    permission_required = 'courses.change_course'
     course = None
     tests = None
 
@@ -238,6 +249,7 @@ class QuestionCreateUpdateView(TemplateResponseMixin, View):
     model = None
     obj = None
     template_name = 'courses/manage/test/create.html'
+    permission_required = 'courses.change_course'
 
     def get_model(self, question_type):
         if question_type in ['questionclosed', 'shortanswer']:
@@ -280,6 +292,7 @@ class QuestionCreateUpdateView(TemplateResponseMixin, View):
 
 
 class QuestionDeleteView(View):
+    permission_required = 'courses.change_course'
 
     def get_model(self, question_type):
         if question_type in ['questionclosed', 'shortanswer']:
@@ -295,6 +308,7 @@ class QuestionDeleteView(View):
 class QuestionManageView(TemplateResponseMixin, View):
     test = None
     template_name = 'courses/manage/test/questions/manage.html'
+    permission_required = 'courses.change_course'
 
     def dispatch(self, request, test_id):
         self.test = get_object_or_404(Test, id=test_id)
@@ -309,4 +323,39 @@ class QuestionManageView(TemplateResponseMixin, View):
         return self.render_to_response({'questions': questions,
                                         'test': self.test})
 
-   
+class TeacherStudentGradesView(LoginRequiredMixin, TemplateResponseMixin,View):
+    template_name = 'courses/course/grades.html'
+    permission_required = 'courses.change_course'
+
+    def get(self, request, course_id, student_id):
+        grades = []
+        course = get_object_or_404(Course, id=course_id)
+        tests = course.tests.all()
+        overall_rating = 0
+        total_weight = 0
+        for test in tests:
+            grade = []
+            grade.append(test.title)
+            grade.append(test.rating_weight)
+            
+            student = get_object_or_404(User,id=student_id)
+            g = get_object_or_404(Grade,test=test,student=student)
+            
+            if g.grade != None:
+                grade.append(g.grade)
+                grade.append(g.total)
+                percent = round((g.grade/g.total)* 100,2) 
+                grade.append(percent)
+                grades.append(grade)
+                overall_rating += percent * test.rating_weight
+                total_weight += test.rating_weight
+            else:
+                grade.append(None)
+                grades.append(grade)
+                
+        if total_weight:
+            overall = round(overall_rating/total_weight,2)
+        else:
+            overall = 0
+        return self.render_to_response({'grades': grades,
+                                        'overall': overall})

@@ -64,4 +64,8 @@ urlpatterns = [
      path('<slug:slug>/',
           views.CourseDetailView.as_view(),
           name='course_detail'),
+
+     path('student/grades/<course_id>/<student_id>/',
+        views.TeacherStudentGradesView.as_view(),
+        name='teacher_student_course_grades'),
 ]

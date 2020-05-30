@@ -13,10 +13,11 @@
         {{ form.as_p }}
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next }}" />
-        <p><input type="submit" value="Zaloguj się"></p>
+        <input type="submit" value="Zaloguj się">
       </form>
+      <div><a href="{% url "student_registration" %}" class="button">Zarejestruj się</a></div>
     </div>
-    <div><a href="{% url "student_registration" %}" class="button">Zarejestruj się</a></div>
+    
   </section>
   
   

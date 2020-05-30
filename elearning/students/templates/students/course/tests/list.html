@@ -5,9 +5,11 @@
 {% block content %}
     <h1>Testy kursu {{course.title}}</h1>
 
-     <div class="courses">
+     <div class="tests">
         {% for test in tests %}
-            {{test.title}} <a href="{% url "student_test_view" test.id %}">Rozwiąż test</a>
+            <div class='test'>{{ forloop.counter }}. {{test.title}} 
+                <a href="{% url "student_test_view" test.id %}">Rozwiąż test</a>
+            </div>
         {% empty %}
             Nie ma stworzonych testów do tego kursu.      
         {% endfor %}

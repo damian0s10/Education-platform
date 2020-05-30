@@ -7,33 +7,39 @@
     {% if solved %}
         Test rozwiązany, uzyskałeś {{ points }} na {{ total }} możliwych punktów.
     {% else %}
-        <div class="courses">
-            <form action="" method="POST">
-                {% for q in questions %}
-                    {% if q.get_class_name == 'shortanswer' %}
-                        <p>{{ forloop.counter }}. {{ q.title }}<p>
-                        Odp.<input type='text' name="{{q.get_class_name}}&{{q.id}}"></input>
-                    {% elif q.get_class_name == 'questionclosed'%}
-                        <p>{{ forloop.counter }}. {{ q.title }}<p>
-                        <input type="radio" name="{{q.get_class_name}}&{{q.id}}" value="a">
-                        <label for="male">{{ q.answers_a}}</label><br>
-                        <input type="radio" name="{{q.get_class_name}}&{{q.id}}" value="b">
-                        <label for="male">{{ q.answers_b}}</label><br>
-                        {% if q.answers_c %}
-                            <input type="radio" name="{{q.get_class_name}}&{{q.id}}" value="c">
-                            <label for="male">{{ q.answers_c}}</label><br>
-                        {% endif %}
-                        {% if q.answers_d %}
-                            <input type="radio" name="{{q.get_class_name}}&{{q.id}}" value="d">
-                            <label for="male">{{ q.answers_d}}</label><br>
-                        {% endif %}
-                    {% endif %}
-                    {% empty %}
-                        Nie ma stworzonych testów do tego kursu.      
-                {% endfor %}
-                {% csrf_token %}
-                <input type="submit" value="Zapisz">
-            </form>
+        <div class="test-solve">
+            {% if not cant_solve %}
+                <form action="" method="POST">
+                    {% for q in questions %}
+                        <div class='test-question'>
+                            {% if q.get_class_name == 'shortanswer' %}
+                                <p>{{ forloop.counter }}. {{ q.title }}<p>
+                                Odp.<input type='text' name="{{q.get_class_name}}&{{q.id}}"></input>
+                            {% elif q.get_class_name == 'questionclosed'%}
+                                <p>{{ forloop.counter }}. {{ q.title }}<p>
+                                <input type="radio" name="{{q.get_class_name}}&{{q.id}}" value="a">
+                                <label for="male">{{ q.answers_a}}</label><br>
+                                <input type="radio" name="{{q.get_class_name}}&{{q.id}}" value="b">
+                                <label for="male">{{ q.answers_b}}</label><br>
+                                {% if q.answers_c %}
+                                    <input type="radio" name="{{q.get_class_name}}&{{q.id}}" value="c">
+                                    <label for="male">{{ q.answers_c}}</label><br>
+                                {% endif %}
+                                {% if q.answers_d %}
+                                    <input type="radio" name="{{q.get_class_name}}&{{q.id}}" value="d">
+                                    <label for="male">{{ q.answers_d}}</label><br>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                            Nie ma stworzonych testów do tego kursu.      
+                    {% endfor %}
+                    {% csrf_token %}
+                    <div class='submit-test'><input type="submit" value="Zapisz"></div>
+                </form>
+            {% else %}
+                <p>Test został już przez Ciebie rozwiązany</p>
+            {% endif %}
         </div> 
     {% endif %}
 {% endblock %}

@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load course %}
 {% block title %}
-    {{ object.title }}
+    {{ course.id }}
+
 {% endblock %}
 
 {% block content %}
@@ -9,7 +10,8 @@
         <p>Lista studentów uczestniczących w kursie:</p>
         <ul>
             {% for student in object_list %}
-                <li>{{ forloop.counter }}. {{ student.first_name }} {{ student.last_name }}</li>
+                <li>{{ forloop.counter }}. {{ student.first_name }} {{ student.last_name }} 
+                <a href="{% url "teacher_student_course_grades" course.id student.id %}">Oceny</a></li>
             {% endfor %}
         </ul>
     </div>

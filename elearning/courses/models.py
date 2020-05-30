@@ -165,4 +165,5 @@ class Grade(models.Model):
     student = models.ForeignKey(User, related_name='student_grades', on_delete=models.CASCADE)
     grade = models.IntegerField(null=True,
                                 validators=[MaxValueValidator(100), MinValueValidator(1)])
-    
+    total = models.IntegerField(null=True,
+                                validators=[MaxValueValidator(100), MinValueValidator(1)])

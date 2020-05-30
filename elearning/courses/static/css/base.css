@@ -332,21 +332,33 @@ section {
 }
 
 section .login-form {
+    margin: 30px auto;
     text-align: center;
+    border:1px solid #ccc;
+    max-width: 500px;
+}
+section .login-form div {
+    margin: 20px;
+}
+section .login-form p {
+    text-align: left;
+    padding: 10px;
 }
 
-section .login-form p {
-    text-align: center;
-}
 .text {
     text-align: center;
 }
 .registration {
-    margin: 20px 0 20px 20%;
+    max-width: 900px;
+    border:1px solid #ccc;
+    margin: 10px auto;
+    padding: 5px 20px
 }
 .profile {
     margin: 20px auto;
     max-width: 500px;
+    border:1px solid #ccc;
+    padding: 20px;
 }
 .profile div {
     margin: 20px 0;
@@ -355,6 +367,8 @@ section .login-form p {
 .students-list {
     max-width: 400px;
     margin: 50px auto;
+    border:1px solid #ccc;
+    padding: 20px;
 }
 .students-list ul {
     list-style: none;
@@ -393,4 +407,38 @@ section .login-form p {
     margin: 20px;
     display: block;
     font-size: 20px;
+}
+.table-grades table tr:nth-of-type(2n+0) {
+    background-color: rgb(216, 216, 216);
+}
+.table-grades table tr:nth-of-type(2n+1) {
+    background-color: rgb(231, 230, 230)
+}
+.table-grades table {
+    margin: 30px auto;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+.table-grades table td, .table-grades table th {
+    text-align: center;
+    height: 40px;
+}
+.tests .test {
+    margin: 20px;
+}
+.test-solve {
+    max-width: 600px;
+    margin: 20px auto;
+    border:1px solid #ccc;
+    padding: 20px;
+    
+}
+.test-solve .test-question {
+    border:1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+}
+.test-solve .submit-test {
+    margin: 10px auto;
+    text-align: center;
 }

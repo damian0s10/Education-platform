@@ -9,9 +9,11 @@
         {% for course in object_list %}
             <div class="course-info">
                 <h3>{{ course.title }}</h3>
-                <a href="{% url "student_course_detail" course.id %}">Dostęp do treści</a>
-                <a href="{% url "student_course_tests" course.id %}">Testy</a>
-                <a href="{% url "student_course_grades" course.id %}">Oceny</a>
+                <p>
+                    <a href="{% url "student_course_detail" course.id %}">Dostęp do treści</a>
+                    <a href="{% url "student_course_tests" course.id %}">Testy</a>
+                    <a href="{% url "student_course_grades" course.id %}">Oceny</a>
+                </p>
             </div>
         {% empty %}
             <p>
